@@ -15,8 +15,8 @@ import java.io.IOException;
 public class Game {
     private Screen screen;
     private Hero hero;
-    private int x = 10;
-    private int y = 10;
+    private Arena arena;
+
     public Game(){
         try {
 
@@ -25,12 +25,13 @@ public class Game {
                     DefaultTerminalFactory()
                     .setInitialTerminalSize(terminalSize);
             Terminal terminal = terminalFactory.createTerminal();
-
+            arena = new Arena(40, 20);
+            hero = new Hero(10, 10);
+            arena.setHero(hero);
             this.screen = new TerminalScreen(terminal);
             this.screen.setCursorPosition(null); // we don't need a cursor
             this.screen.startScreen(); // screens must be started
             this.screen.doResizeIfNecessary(); // resize screen if necessary
-            this.hero = new Hero(10, 10);
         }
 
         catch (IOException e) {
@@ -38,38 +39,16 @@ public class Game {
         }
     }
 
-    private void draw() throws IOException {
-        this.screen.clear();
-        this.hero.draw(screen);
-        this.screen.refresh();
-    }
-   private void processKey(KeyStroke key) throws IOException {
-        System.out.println(key);
-        switch (key.getKeyType()) {
-            case ArrowUp:
-                moveHero(hero.moveUp());
-                break;
-            case ArrowLeft:
-                moveHero(hero.moveLeft());
-                break;
-            case ArrowDown:
-                moveHero(hero.moveDown());
-                break;
 
-            case ArrowRight:
-                moveHero(hero.moveRight());
-                break;
-            case Character:
-                if (key.getCharacter() == 'q' || key.getCharacter() == 'Q') {
-                    try {
-                        this.screen.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-        }
+    private void processKey(KeyStroke key) {
+        arena.processKey(key);
     }
+    private void draw() throws IOException {
+        screen.clear();
+        arena.draw(screen);
+        screen.refresh();
+    }
+
     private void moveHero(Position position) {
         hero.setPosition(position);
     }
