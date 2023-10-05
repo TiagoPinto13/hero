@@ -24,7 +24,7 @@ public void setHero(Hero hero) {
 public boolean canHeroMove(Position position) {
     int x = position.getX();
     int y = position.getY();
-    if (x < 1 || x >= width-1 || y < 1 || y >= height-1){
+    if (x < 0 || x >= width || y < 0 || y >= height){
         return false;
     }
     for (Wall wall : walls) {
