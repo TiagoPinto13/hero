@@ -26,7 +26,7 @@ public class Game {
                     .setInitialTerminalSize(terminalSize);
             Terminal terminal = terminalFactory.createTerminal();
             arena = new Arena(40, 20);
-            hero = new Hero(10, 10);
+            hero = new Hero(new Position(10,10));
             arena.setHero(hero);
             this.screen = new TerminalScreen(terminal);
             this.screen.setCursorPosition(null); // we don't need a cursor

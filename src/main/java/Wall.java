@@ -4,22 +4,14 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.TextColor;
 
-public class Wall {
-    private Position position;
-    private char wallChar;
-
+public class Wall extends Element {
     public Wall(int x, int y) {
-        this.position = new Position(x, y);
-        this.wallChar = '#';
+        super(x, y);
     }
-
-    public Position getPosition() {
-        return position;
-    }
-
+@Override
     public void draw(TextGraphics graphics) {
         graphics.setForegroundColor(TextColor.Factory.fromString("#FFFFFF"));
         graphics.enableModifiers(SGR.BOLD);
-        graphics.putString(new TerminalPosition(position.getX(), position.getY()), String.valueOf(wallChar));
+        graphics.putString(new TerminalPosition(getPosition().getX(), getPosition().getY()), "#");
     }
 }
