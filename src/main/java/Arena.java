@@ -5,15 +5,18 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Arena {
 private int width,height;
 private Hero hero;
-
+private List<Wall> walls;
 public Arena(int w,int h){
     width=w;
     height=h;
+    this.walls = createWalls();
 }
 public void setHero(Hero hero) {
     this.hero = hero;
@@ -21,7 +24,15 @@ public void setHero(Hero hero) {
 public boolean canHeroMove(Position position) {
     int x = position.getX();
     int y = position.getY();
-    return x >= 0 && x < width && y >= 0 && y < height;
+    if (x < 1 || x >= width-1 || y < 1 || y >= height-1){
+        return false;
+    }
+    for (Wall wall : walls) {
+        if (wall.getPosition().equals(position)) {
+            return false;
+        }
+    }
+    return true;
 }
 public void moveHero(Position newPosition) {
     if (canHeroMove(newPosition)) {
@@ -44,10 +55,26 @@ public void processKey(KeyStroke key) {
             break;
     }
 }
+    private List<Wall> createWalls() {
+        List<Wall> walls = new ArrayList<>();
+        for (int c = 0; c < width; c++) {
+            walls.add(new Wall(c, 0));
+            walls.add(new Wall(c, height - 1));
+        }
+        for (int r = 1; r < height - 1; r++) {
+            walls.add(new Wall(0, r));
+            walls.add(new Wall(width - 1, r));
+        }
+        return walls;
+    }
     public void draw(TextGraphics graphics) {
     graphics.setBackgroundColor(TextColor.Factory.fromString("#336699"));
     graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
     hero.draw(graphics);
-
+    for (Wall wall : walls)
+        wall.draw(graphics);
+    if (canHeroMove(hero.getPosition())) {
+        hero.draw(graphics);
+    }
 }
 }
