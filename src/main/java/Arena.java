@@ -44,9 +44,10 @@ public void processKey(KeyStroke key) {
             break;
     }
 }
-public void draw(Screen screen) throws IOException {
-    screen.clear();
-    hero.draw(screen);
-    screen.refresh();
+    public void draw(TextGraphics graphics) {
+    graphics.setBackgroundColor(TextColor.Factory.fromString("#336699"));
+    graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
+    hero.draw(graphics);
+
 }
 }
