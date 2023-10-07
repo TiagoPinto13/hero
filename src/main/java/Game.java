@@ -28,9 +28,9 @@ public class Game {
             hero = new Hero(new Position(10,10));
             arena.setHero(hero);
             this.screen = new TerminalScreen(terminal);
-            this.screen.setCursorPosition(null); // we don't need a cursor
-            this.screen.startScreen(); // screens must be started
-            this.screen.doResizeIfNecessary(); // resize screen if necessary
+            this.screen.setCursorPosition(null);
+            this.screen.startScreen();
+            this.screen.doResizeIfNecessary();
         }
 
         catch (IOException e) {
@@ -39,8 +39,17 @@ public class Game {
     }
 
 
-    private void processKey(KeyStroke key) {
+    private void processKey(KeyStroke key) throws IOException {
         arena.processKey(key);
+        arena.moveMonsters();
+        if (arena.verifyMonsterCollisions()) {
+            System.out.println("Game over! The hero touched a monster.");
+        }
+        else if (arena.getScore()==5) {
+            screen.close();
+            System.out.println("Score:5.");
+            System.out.println("You Won!");
+        }
     }
     private void draw() throws IOException {
         screen.clear();
