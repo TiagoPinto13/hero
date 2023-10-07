@@ -1,22 +1,21 @@
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.screen.Screen;
-import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class Arena {
 private int width,height;
 private Hero hero;
 private List<Wall> walls;
+private List<Coin> coins;
 public Arena(int w,int h){
     width=w;
     height=h;
     this.walls = createWalls();
+    this.coins = createCoins();
 }
 public void setHero(Hero hero) {
     this.hero = hero;
@@ -37,6 +36,7 @@ public boolean canHeroMove(Position position) {
 public void moveHero(Position newPosition) {
     if (canHeroMove(newPosition)) {
         hero.setPosition(newPosition);
+        retrieveCoins();
     }
 }
 public void processKey(KeyStroke key) {
@@ -67,14 +67,60 @@ public void processKey(KeyStroke key) {
         }
         return walls;
     }
+
+    private List<Coin> createCoins() {
+        Random random = new Random();
+        ArrayList<Coin> coins = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            int a = random.nextInt(width - 2) + 1;
+            int b = random.nextInt(height - 2) + 1;
+
+            if (a == 10 && b == 10){
+                i--;
+            }
+            else if (iscoinontopofanother(coins,a,b)) {
+                coins.add(new Coin(a, b));
+            }
+            else{
+                i--;
+            }
+        }
+        return coins;
+    }
+    public void retrieveCoins() {
+        Position heroPosition = hero.getPosition();
+        List<Coin> coinsToRemove = new ArrayList<>();
+
+        for (Coin coin : coins) {
+            if (coin.getPosition().equals(heroPosition)) {
+                coinsToRemove.add(coin);
+            }
+        }
+
+        coins.removeAll(coinsToRemove);
+    }
+
+    private boolean iscoinontopofanother(ArrayList<Coin> coins, int a, int b){
+        for(Coin coin : coins){
+            if(coin.getPosition().getX() == a && coin.getPosition().getX() == b){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
     public void draw(TextGraphics graphics) {
     graphics.setBackgroundColor(TextColor.Factory.fromString("#336699"));
     graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
     hero.draw(graphics);
     for (Wall wall : walls)
         wall.draw(graphics);
-    if (canHeroMove(hero.getPosition())) {
-        hero.draw(graphics);
+    hero.draw(graphics);
+    for (Coin coin : coins)
+        coin.draw(graphics);
     }
-}
 }
